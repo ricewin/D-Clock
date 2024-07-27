@@ -40,14 +40,9 @@ namespace D_Clock
             };
         }
 
-        private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
+        private void Window_MouseLeftButtonDown(object sender,
+            System.Windows.Input.MouseButtonEventArgs e) => DragMove();
 
-        private void ClickMenu_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void ClickMenu_Click(object sender, RoutedEventArgs e) => Close();
     }
 }
