@@ -23,7 +23,6 @@
         <TextBlock x:Name="TimeLabel"
                    Text="00:00:00"
                    Foreground="AliceBlue"
-                   FontFamily="Lucida Sans Typewriter"
-                   FontWeight="Bold" />
+                   FontFamily="Bauhaus 93" />
     </Viewbox>
 </Window>
