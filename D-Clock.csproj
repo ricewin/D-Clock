@@ -6,7 +6,6 @@
     <RootNamespace>D_Clock</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
     <ApplicationIcon>clock_digital_icon_136769.ico</ApplicationIcon>
   </PropertyGroup>
 
