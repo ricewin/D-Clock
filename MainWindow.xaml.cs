@@ -13,14 +13,17 @@ namespace D_Clock
         /// 時刻設定用のタイマー
         /// </summary>
         private readonly DispatcherTimer _timer = new();
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
+
             // タイマー初期化
             InitializeTimer();
+
             // タイマー開始
             _timer.Start();
         }
@@ -32,6 +35,7 @@ namespace D_Clock
         {
             // イベント発生間隔の設定
             _timer.Interval = TimeSpan.FromMilliseconds(500);
+
             // イベント登録
             _timer.Tick += (_, _) =>
             {
