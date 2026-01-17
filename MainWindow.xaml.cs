@@ -26,6 +26,9 @@ namespace D_Clock
 
             // タイマー開始
             _timer.Start();
+
+            // ウィンドウが閉じられる際にタイマーを停止
+            Closed += OnWindowClosed;
         }
 
         /// <summary>
@@ -37,11 +40,29 @@ namespace D_Clock
             _timer.Interval = TimeSpan.FromMilliseconds(500);
 
             // イベント登録
-            _timer.Tick += (_, _) =>
-            {
-                // 現在時刻を設定
-                TimeLabel.Text = DateTime.Now.ToString("HH:mm:ss");
-            };
+            _timer.Tick += OnTimerTick;
+        }
+
+        /// <summary>
+        /// タイマーTickイベントハンドラー
+        /// </summary>
+        private void OnTimerTick(object? sender, EventArgs e)
+        {
+            // 現在時刻を設定
+            TimeLabel.Text = DateTime.Now.ToString("HH:mm:ss");
+        }
+
+        /// <summary>
+        /// ウィンドウClosedイベントハンドラー
+        /// </summary>
+        private void OnWindowClosed(object? sender, EventArgs e)
+        {
+            // イベントハンドラーを解除
+            _timer.Tick -= OnTimerTick;
+            Closed -= OnWindowClosed;
+
+            // タイマー停止
+            _timer.Stop();
         }
 
         private void Window_MouseLeftButtonDown(object sender,
