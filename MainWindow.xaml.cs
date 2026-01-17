@@ -57,12 +57,12 @@ namespace D_Clock
         /// </summary>
         private void OnWindowClosed(object? sender, EventArgs e)
         {
+            // タイマー停止
+            _timer.Stop();
+
             // イベントハンドラーを解除
             _timer.Tick -= OnTimerTick;
             Closed -= OnWindowClosed;
-
-            // タイマー停止
-            _timer.Stop();
         }
 
         private void Window_MouseLeftButtonDown(object sender,
