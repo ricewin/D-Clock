@@ -26,6 +26,12 @@ namespace D_Clock
 
             // タイマー開始
             _timer.Start();
+
+            // ウィンドウが閉じられる際にタイマーを停止
+            Closed += (_, _) =>
+            {
+                _timer.Stop();
+            };
         }
 
         /// <summary>
