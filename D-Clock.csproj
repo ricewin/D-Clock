@@ -16,6 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="D-Clock.Tests\**\*.cs" />
+    <EmbeddedResource Remove="D-Clock.Tests\**\*" />
+    <None Remove="D-Clock.Tests\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>

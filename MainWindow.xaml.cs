@@ -60,16 +60,23 @@ namespace D_Clock
             var left = Settings.Default.WindowLeft;
             var top = Settings.Default.WindowTop;
 
-            if (!double.IsNaN(left) && !double.IsNaN(top))
+            if (!double.IsNaN(left) && !double.IsInfinity(left)
+                && !double.IsNaN(top) && !double.IsInfinity(top))
             {
-                // 画面内に収まるようにクランプ
-                var screenWidth = SystemParameters.VirtualScreenWidth;
-                var screenHeight = SystemParameters.VirtualScreenHeight;
-                var screenLeft = SystemParameters.VirtualScreenLeft;
-                var screenTop = SystemParameters.VirtualScreenTop;
+                var clampedPosition = WindowPositionHelper.ClampToVirtualScreen(
+                    requestedLeft: left,
+                    requestedTop: top,
+                    actualWidth: ActualWidth,
+                    actualHeight: ActualHeight,
+                    width: Width,
+                    height: Height,
+                    screenLeft: SystemParameters.VirtualScreenLeft,
+                    screenTop: SystemParameters.VirtualScreenTop,
+                    screenWidth: SystemParameters.VirtualScreenWidth,
+                    screenHeight: SystemParameters.VirtualScreenHeight);
 
-                Left = Math.Max(screenLeft, Math.Min(left, screenLeft + screenWidth - ActualWidth));
-                Top = Math.Max(screenTop, Math.Min(top, screenTop + screenHeight - ActualHeight));
+                Left = clampedPosition.Left;
+                Top = clampedPosition.Top;
             }
         }
 
@@ -111,14 +118,29 @@ namespace D_Clock
         /// マウス左ボタン押下イベントハンドラー（ウィンドウドラッグ）
         /// </summary>
         private void Window_MouseLeftButtonDown(object sender,
-            System.Windows.Input.MouseButtonEventArgs e) => DragMove();
+            System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed)
+            {
+                return;
+            }
+
+            try
+            {
+                DragMove();
+            }
+            catch (InvalidOperationException)
+            {
+                // 入力タイミング競合時のクラッシュ防止
+            }
+        }
 
         /// <summary>
         /// ウィンドウ位置変更イベントハンドラー
         /// </summary>
         private void Window_LocationChanged(object sender, EventArgs e)
         {
-            if (!_locationSaveEnabled) return;
+            if (!WindowPositionHelper.CanPersistLocation(_locationSaveEnabled, IsLoaded)) return;
 
             Settings.Default.WindowLeft = Left;
             Settings.Default.WindowTop = Top;
