@@ -27,20 +27,29 @@ namespace D_Clock
         {
             InitializeComponent();
 
-            // 保存済みのウィンドウ位置を復元
-            RestoreWindowPosition();
-
             // タイマー初期化
             InitializeTimer();
 
             // タイマー開始
             _timer.Start();
 
-            // 位置保存を有効化
-            _locationSaveEnabled = true;
-
             // ウィンドウが閉じられる際にタイマーを停止
             Closed += OnWindowClosed;
+
+            // レイアウト完了後にウィンドウ位置を復元（ActualWidth/ActualHeight が確定してから）
+            Loaded += OnWindowLoaded;
+        }
+
+        /// <summary>
+        /// ウィンドウLoadedイベントハンドラー
+        /// </summary>
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnWindowLoaded;
+            RestoreWindowPosition();
+
+            // 位置保存を有効化
+            _locationSaveEnabled = true;
         }
 
         /// <summary>
@@ -59,8 +68,8 @@ namespace D_Clock
                 var screenLeft = SystemParameters.VirtualScreenLeft;
                 var screenTop = SystemParameters.VirtualScreenTop;
 
-                Left = Math.Max(screenLeft, Math.Min(left, screenLeft + screenWidth - Width));
-                Top = Math.Max(screenTop, Math.Min(top, screenTop + screenHeight - Height));
+                Left = Math.Max(screenLeft, Math.Min(left, screenLeft + screenWidth - ActualWidth));
+                Top = Math.Max(screenTop, Math.Min(top, screenTop + screenHeight - ActualHeight));
             }
         }
 
@@ -98,9 +107,15 @@ namespace D_Clock
             _timer.Stop();
         }
 
+        /// <summary>
+        /// マウス左ボタン押下イベントハンドラー（ウィンドウドラッグ）
+        /// </summary>
         private void Window_MouseLeftButtonDown(object sender,
             System.Windows.Input.MouseButtonEventArgs e) => DragMove();
 
+        /// <summary>
+        /// ウィンドウ位置変更イベントハンドラー
+        /// </summary>
         private void Window_LocationChanged(object sender, EventArgs e)
         {
             if (!_locationSaveEnabled) return;
@@ -110,6 +125,9 @@ namespace D_Clock
             Settings.Default.Save();
         }
 
+        /// <summary>
+        /// コンテキストメニュー「閉じる」クリックイベントハンドラー
+        /// </summary>
         private void ClickMenu_Click(object sender, RoutedEventArgs e) => Close();
     }
 }
