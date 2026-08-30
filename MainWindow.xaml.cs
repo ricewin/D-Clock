@@ -143,17 +143,6 @@ namespace D_Clock
         }
 
         /// <summary>
-        /// ウィンドウ位置変更イベントハンドラー
-        /// </summary>
-        private void Window_LocationChanged(object sender, EventArgs e)
-        {
-            if (!WindowPositionHelper.CanPersistLocation(_locationSaveEnabled, IsLoaded)) return;
-
-            Settings.Default.WindowLeft = Left;
-            Settings.Default.WindowTop = Top;
-        }
-
-        /// <summary>
         /// コンテキストメニュー「閉じる」クリックイベントハンドラー
         /// </summary>
         private void ClickMenu_Click(object sender, RoutedEventArgs e) => Close();

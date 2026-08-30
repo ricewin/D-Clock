@@ -2,8 +2,14 @@ using System;
 
 namespace D_Clock
 {
+    /// <summary>
+    /// ウィンドウ位置のクランプと永続化判定を提供するヘルパークラス
+    /// </summary>
     public static class WindowPositionHelper
     {
+        /// <summary>
+        /// 指定した座標をバーチャルスクリーン内に収まるようにクランプして返します
+        /// </summary>
         public static (double Left, double Top) ClampToVirtualScreen(
             double requestedLeft,
             double requestedTop,
@@ -28,6 +34,9 @@ namespace D_Clock
             return (clampedLeft, clampedTop);
         }
 
+        /// <summary>
+        /// ウィンドウ位置の永続化が可能かどうかを返します
+        /// </summary>
         public static bool CanPersistLocation(bool isLocationSaveEnabled, bool isLoaded)
             => isLocationSaveEnabled && isLoaded;
 

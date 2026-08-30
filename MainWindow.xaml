@@ -12,8 +12,7 @@
         Topmost="True"
         Background="#BF000000"
         AllowsTransparency="True"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        LocationChanged="Window_LocationChanged">
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem Header="閉じる(_C)"
