@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using D_Clock.Properties;
 
 namespace D_Clock
 {
@@ -13,6 +14,11 @@ namespace D_Clock
         /// 時刻設定用のタイマー
         /// </summary>
         private readonly DispatcherTimer _timer = new();
+
+        /// <summary>
+        /// 位置保存を有効にするフラグ（初期化完了後に true にする）
+        /// </summary>
+        private bool _locationSaveEnabled;
 
         /// <summary>
         /// コンストラクタ
@@ -29,6 +35,49 @@ namespace D_Clock
 
             // ウィンドウが閉じられる際にタイマーを停止
             Closed += OnWindowClosed;
+
+            // レイアウト完了後にウィンドウ位置を復元（ActualWidth/ActualHeight が確定してから）
+            Loaded += OnWindowLoaded;
+        }
+
+        /// <summary>
+        /// ウィンドウLoadedイベントハンドラー
+        /// </summary>
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnWindowLoaded;
+            RestoreWindowPosition();
+
+            // 位置保存を有効化
+            _locationSaveEnabled = true;
+        }
+
+        /// <summary>
+        /// 保存済みのウィンドウ位置を復元する
+        /// </summary>
+        private void RestoreWindowPosition()
+        {
+            var left = Settings.Default.WindowLeft;
+            var top = Settings.Default.WindowTop;
+
+            if (!double.IsNaN(left) && !double.IsInfinity(left)
+                && !double.IsNaN(top) && !double.IsInfinity(top))
+            {
+                var clampedPosition = WindowPositionHelper.ClampToVirtualScreen(
+                    requestedLeft: left,
+                    requestedTop: top,
+                    actualWidth: ActualWidth,
+                    actualHeight: ActualHeight,
+                    width: Width,
+                    height: Height,
+                    screenLeft: SystemParameters.VirtualScreenLeft,
+                    screenTop: SystemParameters.VirtualScreenTop,
+                    screenWidth: SystemParameters.VirtualScreenWidth,
+                    screenHeight: SystemParameters.VirtualScreenHeight);
+
+                Left = clampedPosition.Left;
+                Top = clampedPosition.Top;
+            }
         }
 
         /// <summary>
@@ -57,6 +106,13 @@ namespace D_Clock
         /// </summary>
         private void OnWindowClosed(object? sender, EventArgs e)
         {
+            if (WindowPositionHelper.CanPersistLocation(_locationSaveEnabled, IsLoaded))
+            {
+                Settings.Default.WindowLeft = Left;
+                Settings.Default.WindowTop = Top;
+                Settings.Default.Save();
+            }
+
             // イベントハンドラーを解除
             _timer.Tick -= OnTimerTick;
             Closed -= OnWindowClosed;
@@ -65,9 +121,30 @@ namespace D_Clock
             _timer.Stop();
         }
 
+        /// <summary>
+        /// マウス左ボタン押下イベントハンドラー（ウィンドウドラッグ）
+        /// </summary>
         private void Window_MouseLeftButtonDown(object sender,
-            System.Windows.Input.MouseButtonEventArgs e) => DragMove();
+            System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed)
+            {
+                return;
+            }
 
+            try
+            {
+                DragMove();
+            }
+            catch (InvalidOperationException)
+            {
+                // 入力タイミング競合時のクラッシュ防止
+            }
+        }
+
+        /// <summary>
+        /// コンテキストメニュー「閉じる」クリックイベントハンドラー
+        /// </summary>
         private void ClickMenu_Click(object sender, RoutedEventArgs e) => Close();
     }
 }
