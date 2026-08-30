@@ -106,6 +106,13 @@ namespace D_Clock
         /// </summary>
         private void OnWindowClosed(object? sender, EventArgs e)
         {
+            if (WindowPositionHelper.CanPersistLocation(_locationSaveEnabled, IsLoaded))
+            {
+                Settings.Default.WindowLeft = Left;
+                Settings.Default.WindowTop = Top;
+                Settings.Default.Save();
+            }
+
             // イベントハンドラーを解除
             _timer.Tick -= OnTimerTick;
             Closed -= OnWindowClosed;
@@ -144,7 +151,6 @@ namespace D_Clock
 
             Settings.Default.WindowLeft = Left;
             Settings.Default.WindowTop = Top;
-            Settings.Default.Save();
         }
 
         /// <summary>
@@ -153,4 +159,3 @@ namespace D_Clock
         private void ClickMenu_Click(object sender, RoutedEventArgs e) => Close();
     }
 }
-
